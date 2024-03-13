@@ -33,6 +33,7 @@ jobs:
           pip install pipenv
       - name: Run lint
         run: |
+          pip install flake8
           cd starter/backend && pipenv run lint
   test:
     runs-on: ubuntu-latest
@@ -55,6 +56,7 @@ jobs:
           pip install pipenv
       - name: Run lint
         run: |
+          pip install flake8
           cd starter/backend && pipenv run lint
   build:
     runs-on: ubuntu-latest
