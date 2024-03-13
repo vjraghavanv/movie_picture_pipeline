@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-pipenv
       - name: Install dependencies
         run: |
-          pipenv install
+          pip install pipenv
       - name: Run lint
         run: |
           pipenv run lint
@@ -52,7 +52,7 @@ jobs:
             ${{ runner.os }}-pipenv
       - name: Install dependencies
         run: |
-          pipenv install
+          pip install pipenv
       - name: Run lint
         run: |
           pipenv run lint
