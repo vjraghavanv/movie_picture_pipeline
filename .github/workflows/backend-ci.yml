@@ -1,0 +1,79 @@
+# Workflow name
+name: Backend Continuous Integration
+
+# Triggers for the workflow
+on:
+# Manual trigger using the workflow_dispatch event
+  workflow_dispatch:
+
+# Automatic trigger on pull request events targeting the main branch
+  pull_request:
+    branches:
+      - main
+# Jobs defined in the workflow
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Specify Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pipenv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv
+      - name: Install dependencies
+        run: |
+          pipenv install
+      - name: Run lint
+        run: |
+          pipenv run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Specify Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pipenv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv
+      - name: Install dependencies
+        run: |
+          pipenv install
+      - name: Run lint
+        run: |
+          pipenv run lint
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Specify Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{  steps.login-ecr-public.outputs.registry }}
+          REPOSITORY: my-ecr-repo
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
