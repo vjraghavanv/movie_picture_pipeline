@@ -69,4 +69,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build Docker Image
-        run: docker build --tag mp-backend:latest .
+        run: |
+          cd starter/backend
+          docker build --tag mp-backend:latest .
