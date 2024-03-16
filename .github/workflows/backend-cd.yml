@@ -90,6 +90,7 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
       - name: Kubeconfig configuration
+        working-directory: starter/backend
         run: |
           aws eks update-kubeconfig --name cluster --region us-east-1
       - name: Deploy Docker Image to Amazon EKS
